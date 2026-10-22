@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os/exec"
 
 	"clearqueue/spooler"
 
@@ -83,7 +84,7 @@ func main() {
 		AssignTo: &mw,
 		Title:    "เคลียร์คิวเครื่องพิมพ์ " + version,
 		Icon:     1, // go-winres stores the app icon as resource ID 1; walk only looks for ID 7 on its own
-		Size:     Size{Width: 520, Height: 500},
+		Size:     Size{Width: 520, Height: 480},
 		Font:     Font{Family: "Leelawadee UI", PointSize: 11},
 		Layout:   VBox{Margins: Margins{Left: 16, Top: 16, Right: 16, Bottom: 16}, Spacing: 10},
 		Children: []Widget{
@@ -98,11 +99,13 @@ func main() {
 			},
 			PushButton{AssignTo: &testBtn, Text: "พิมพ์หน้าทดสอบ", MinSize: Size{Height: 40}, OnClicked: onTest},
 			TextLabel{AssignTo: &status, Text: "พร้อมใช้งาน", MinSize: Size{Width: 1}},
-			TextLabel{
-				Text:          "พัฒนาโดย นายอุสมาน การีมี\nนักวิชาการคอมพิวเตอร์ชำนาญการ สสอ.หาดใหญ่",
-				TextAlignment: AlignHCenterVNear,
-				TextColor:     walk.RGB(120, 120, 120),
-				Font:          Font{Family: "Leelawadee UI", PointSize: 9},
+			LinkLabel{
+				Text:      `Developed by <a href="https://powerpcu.com">powerpcu team</a>`,
+				Alignment: AlignHCenterVNear,
+				Font:      Font{Family: "Leelawadee UI", PointSize: 8},
+				// explorer.exe hands the URL to the already-running desktop shell, so the browser
+				// opens with normal rights instead of inheriting this app's admin token.
+				OnLinkActivated: func(link *walk.LinkLabelLink) { exec.Command("explorer.exe", link.URL()).Start() },
 			},
 		},
 	}.Create()
