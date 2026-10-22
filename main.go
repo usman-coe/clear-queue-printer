@@ -26,10 +26,11 @@ func main() {
 		printers = ps
 		items, sel := make([]string, len(ps)), 0
 		for i, p := range ps {
-			items[i] = p.Name
+			jobs := "ไม่มีงานค้าง"
 			if p.Jobs > 0 {
-				items[i] += fmt.Sprintf("   (ค้าง %d งาน)", p.Jobs)
+				jobs = fmt.Sprintf("ค้าง %d งาน", p.Jobs)
 			}
+			items[i] = fmt.Sprintf("%s   (%s)", p.Name, jobs)
 			if p.Default {
 				items[i] += "   ★ เครื่องหลัก"
 				sel = i
@@ -78,7 +79,8 @@ func main() {
 	err := MainWindow{
 		AssignTo: &mw,
 		Title:    "เคลียร์คิวเครื่องพิมพ์",
-		Size:     Size{Width: 520, Height: 460},
+		Icon:     1, // go-winres stores the app icon as resource ID 1; walk only looks for ID 7 on its own
+		Size:     Size{Width: 520, Height: 500},
 		Font:     Font{Family: "Leelawadee UI", PointSize: 11},
 		Layout:   VBox{Margins: Margins{Left: 16, Top: 16, Right: 16, Bottom: 16}, Spacing: 10},
 		Children: []Widget{
@@ -93,6 +95,12 @@ func main() {
 			},
 			PushButton{AssignTo: &testBtn, Text: "พิมพ์หน้าทดสอบ", MinSize: Size{Height: 40}, OnClicked: onTest},
 			TextLabel{AssignTo: &status, Text: "พร้อมใช้งาน", MinSize: Size{Width: 1}},
+			TextLabel{
+				Text:          "พัฒนาโดย นายอุสมาน การีมี\nนักวิชาการคอมพิวเตอร์ชำนาญการ สสอ.หาดใหญ่",
+				TextAlignment: AlignHCenterVNear,
+				TextColor:     walk.RGB(120, 120, 120),
+				Font:          Font{Family: "Leelawadee UI", PointSize: 9},
+			},
 		},
 	}.Create()
 	if err != nil {

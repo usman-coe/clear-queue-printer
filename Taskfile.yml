@@ -1,0 +1,16 @@
+version: '3'
+
+tasks:
+  default:
+    cmds:
+      - task: build
+
+  build:
+    desc: Build ClearPrintQueue.exe (close the running app first)
+    cmds:
+      - go build -ldflags="-H windowsgui -s -w" -o ClearPrintQueue.exe
+
+  test:
+    desc: Run the tests
+    cmds:
+      - go test ./...

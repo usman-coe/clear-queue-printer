@@ -13,7 +13,8 @@ go test ./spooler -run TestClearDir -v
 ```
 
 - `-H windowsgui` keeps a console window from opening. Without it the app still runs.
-- `rsrc_windows_amd64.syso` holds the app manifest, and `go build` links it in automatically. It requests `requireAdministrator` (stopping the spooler needs admin), turns on Common-Controls v6 (walk does not work without it) and sets per-monitor DPI awareness. If you delete or rename this file, the exe still builds but no longer works. There is no source manifest in the repo, so changing the manifest means rebuilding the `.syso` with a tool such as `rsrc` or `go-winres`.
+- `rsrc_windows_amd64.syso` holds the app manifest, and `go build` links it in automatically. It requests `requireAdministrator` (stopping the spooler needs admin), turns on Common-Controls v6 (walk does not work without it) and sets per-monitor DPI awareness. If you delete or rename this file, the exe still builds but no longer works. It also holds the app icon (`winres/icon.ico`, drawn from `winres/icon.svg`) as resource ID 1, and `main.go` sets `Icon: 1` because walk only looks for ID 7 on its own. There is no source manifest in the repo. Regenerate the `.syso` with exactly these flags, or the admin prompt or icon is silently lost:
+  `go run github.com/tc-hib/go-winres@v0.3.3 simply --arch amd64 --manifest gui --admin --product-name "Clear Print Queue" --file-description "Clear Print Queue" --icon winres/icon.ico`
 - `TestListReadsInstalledPrinters` calls the real `EnumPrintersW`. It checks the struct layout, so the printers it logs need readable names.
 
 ## Architecture
