@@ -9,6 +9,9 @@ import (
 	. "github.com/lxn/walk/declarative"
 )
 
+// version is stamped in at build time by `task build`: -ldflags "-X main.version=v1.0.0".
+var version = "dev"
+
 func main() {
 	var (
 		mw                *walk.MainWindow
@@ -78,7 +81,7 @@ func main() {
 
 	err := MainWindow{
 		AssignTo: &mw,
-		Title:    "เคลียร์คิวเครื่องพิมพ์",
+		Title:    "เคลียร์คิวเครื่องพิมพ์ " + version,
 		Icon:     1, // go-winres stores the app icon as resource ID 1; walk only looks for ID 7 on its own
 		Size:     Size{Width: 520, Height: 500},
 		Font:     Font{Family: "Leelawadee UI", PointSize: 11},

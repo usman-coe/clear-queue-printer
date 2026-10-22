@@ -7,10 +7,14 @@ Windows-only GUI tool (Go + `lxn/walk`) that clears stuck print jobs. The UI tex
 ## Commands
 
 ```sh
-go build -ldflags="-H windowsgui -s -w" -o ClearPrintQueue.exe   # flags the shipped exe was built with
-go test ./...
+task build      # go build -ldflags="-H windowsgui -s -w -X main.version=<git describe>" -o ClearPrintQueue.exe
+task test       # go test ./...
+task release    # needs a tag on a clean HEAD; builds, then gh release create <tag> with the exe attached
 go test ./spooler -run TestClearDir -v
 ```
+
+- `main.version` (shown in the window title) comes from `git describe --tags --always --dirty`; a plain `go build` shows `dev`.
+- `ClearPrintQueue.exe` is gitignored. It ships only as a GitHub release asset (`usman-coe/clear-queue-printer`).
 
 - `-H windowsgui` keeps a console window from opening. Without it the app still runs.
 - `rsrc_windows_amd64.syso` holds the app manifest, and `go build` links it in automatically. It requests `requireAdministrator` (stopping the spooler needs admin), turns on Common-Controls v6 (walk does not work without it) and sets per-monitor DPI awareness. If you delete or rename this file, the exe still builds but no longer works. It also holds the app icon (`winres/icon.ico`, drawn from `winres/icon.svg`) as resource ID 1, and `main.go` sets `Icon: 1` because walk only looks for ID 7 on its own. There is no source manifest in the repo. Regenerate the `.syso` with exactly these flags, or the admin prompt or icon is silently lost:

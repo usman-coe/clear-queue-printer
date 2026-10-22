@@ -1,5 +1,9 @@
 version: '3'
 
+vars:
+  VERSION:
+    sh: git describe --tags --always --dirty
+
 tasks:
   default:
     cmds:
@@ -8,9 +12,20 @@ tasks:
   build:
     desc: Build ClearPrintQueue.exe (close the running app first)
     cmds:
-      - go build -ldflags="-H windowsgui -s -w" -o ClearPrintQueue.exe
+      - go build -ldflags="-H windowsgui -s -w -X main.version={{.VERSION}}" -o ClearPrintQueue.exe
 
   test:
     desc: Run the tests
     cmds:
       - go test ./...
+
+  release:
+    desc: Build and publish a GitHub release for the tag on HEAD (tag first, e.g. git tag v1.1.0 && git push origin v1.1.0)
+    preconditions:
+      - sh: git describe --tags --exact-match HEAD
+        msg: "HEAD has no tag. Run: git tag vX.Y.Z && git push origin vX.Y.Z"
+      - sh: git diff --quiet HEAD
+        msg: "Commit your changes first"
+    cmds:
+      - task: build
+      - gh release create {{.VERSION}} ClearPrintQueue.exe --title "{{.VERSION}}" --generate-notes
